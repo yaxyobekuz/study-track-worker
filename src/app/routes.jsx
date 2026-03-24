@@ -1,0 +1,42 @@
+// Layouts
+import DashboardLayout from "@/shared/layouts/DashboardLayout";
+
+// Guards
+import AuthGuard from "@/shared/components/guards/AuthGuard";
+import GuestGuard from "@/shared/components/guards/GuestGuard";
+
+// Pages — Auth
+import LoginPage from "@/features/auth/pages/LoginPage";
+
+// Pages — Dashboard
+import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+
+// Pages — Penalties
+import MyPenaltiesPage from "@/features/penalties/pages/MyPenaltiesPage";
+
+// Router
+import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
+
+const Routes = () => {
+  return (
+    <RoutesWrapper>
+      {/* Guest only routes */}
+      <Route element={<GuestGuard />}>
+        <Route path="/login" element={<LoginPage />} />
+      </Route>
+
+      {/* Protected routes */}
+      <Route element={<AuthGuard />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/penalties/my" element={<MyPenaltiesPage />} />
+        </Route>
+      </Route>
+
+      {/* 404 */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </RoutesWrapper>
+  );
+};
+
+export default Routes;
