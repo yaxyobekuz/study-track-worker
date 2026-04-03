@@ -71,6 +71,10 @@ const navItems = [
         title: "Bosh sahifa",
         url: "/",
       },
+      {
+        title: "Topshiriqlar",
+        url: "/tasks",
+      },
     ],
   },
   {
