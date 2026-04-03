@@ -14,6 +14,10 @@ import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 // Pages — Penalties
 import MyPenaltiesPage from "@/features/penalties/pages/MyPenaltiesPage";
 
+// Pages — Tasks
+import MyTasksPage from "@/features/tasks/pages/MyTasksPage";
+import TaskDetailPage from "@/features/tasks/pages/TaskDetailPage";
+
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 
@@ -30,6 +34,10 @@ const Routes = () => {
         <Route element={<DashboardLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/penalties/my" element={<MyPenaltiesPage />} />
+
+          {/* Tasks */}
+          <Route path="/tasks" element={<MyTasksPage />} />
+          <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
         </Route>
       </Route>
 
