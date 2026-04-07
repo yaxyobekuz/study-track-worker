@@ -1,6 +1,7 @@
 // Icons
 import {
   Home,
+  Clock,
   LogOut,
   AlertTriangle,
   TrendingUp,
@@ -81,11 +82,26 @@ const navItems = [
     title: "Jarimalar",
     url: "/penalties/my",
     icon: AlertTriangle,
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: "Mening jarimalarim",
         url: "/penalties/my",
+      },
+    ],
+  },
+  {
+    title: "Davomat",
+    icon: Clock,
+    isActive: true,
+    items: [
+      {
+        title: "Davomat",
+        url: "/attendance",
+      },
+      {
+        title: "Mening davomatim",
+        url: "/attendance/my",
       },
     ],
   },

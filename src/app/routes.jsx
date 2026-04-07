@@ -18,6 +18,10 @@ import MyPenaltiesPage from "@/features/penalties/pages/MyPenaltiesPage";
 import MyTasksPage from "@/features/tasks/pages/MyTasksPage";
 import TaskDetailPage from "@/features/tasks/pages/TaskDetailPage";
 
+// Pages — Attendance
+import AttendancePage from "@/features/attendance/pages/AttendancePage";
+import MyAttendancePage from "@/features/attendance/pages/MyAttendancePage";
+
 // Router
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 
@@ -38,6 +42,10 @@ const Routes = () => {
           {/* Tasks */}
           <Route path="/tasks" element={<MyTasksPage />} />
           <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
+
+          {/* Attendance */}
+          <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/attendance/my" element={<MyAttendancePage />} />
         </Route>
       </Route>
 
