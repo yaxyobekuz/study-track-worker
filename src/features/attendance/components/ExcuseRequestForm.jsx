@@ -5,9 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { attendanceAPI } from "../api/attendance.api";
 import { EXCUSE_TYPE_OPTIONS } from "../data/attendance.data";
 
-/**
- * Excuse so'rov yuborish formasi
- */
 const ExcuseRequestForm = ({ onSuccess }) => {
   const [date, setDate] = useState("");
   const [reason, setReason] = useState("");
@@ -28,7 +25,9 @@ const ExcuseRequestForm = ({ onSuccess }) => {
         setDate("");
         setReason("");
         setType("after");
-        queryClient.invalidateQueries({ queryKey: ["attendance", "myExcuses"] });
+        queryClient.invalidateQueries({
+          queryKey: ["attendance", "myExcuses"],
+        });
         onSuccess?.();
       })
       .catch((err) => {
@@ -38,7 +37,10 @@ const ExcuseRequestForm = ({ onSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-gray-200 bg-white p-5">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 rounded-xl border border-gray-200 bg-white p-5"
+    >
       <h3 className="font-semibold text-gray-900">Sababli yo'qlik so'rovi</h3>
 
       <div>
@@ -55,10 +57,15 @@ const ExcuseRequestForm = ({ onSuccess }) => {
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-700 mb-1.5 block">So'rov turi</label>
+        <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+          So'rov turi
+        </label>
         <div className="flex gap-3">
           {EXCUSE_TYPE_OPTIONS.map((opt) => (
-            <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+            <label
+              key={opt.value}
+              className="flex items-center gap-2 cursor-pointer"
+            >
               <input
                 type="radio"
                 name="excuseType"
@@ -86,7 +93,9 @@ const ExcuseRequestForm = ({ onSuccess }) => {
           className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm focus:outline-blue-500 resize-none"
           maxLength={500}
         />
-        <p className="text-xs text-gray-400 mt-1 text-right">{reason.length}/500</p>
+        <p className="text-xs text-gray-400 mt-1 text-right">
+          {reason.length}/500
+        </p>
       </div>
 
       <button
