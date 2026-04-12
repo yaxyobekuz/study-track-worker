@@ -1,9 +1,5 @@
 import { MapPin, WifiOff } from "lucide-react";
 
-/**
- * GPS holati ko'rsatkichi
- * @param {{ accuracy: number|null, error: string|null }} props
- */
 const GeolocationStatus = ({ accuracy, error }) => {
   if (error) {
     return (
