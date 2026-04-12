@@ -5,7 +5,9 @@ const initialModalData = { isOpen: false, data: {}, isLoading: false };
 
 // Initial state
 const initialState = {
+  bugReport: initialModalData,
   downloadApp: initialModalData,
+  excuseRequest: initialModalData,
 };
 
 export const modalSlice = createSlice({
