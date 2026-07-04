@@ -1,4 +1,4 @@
-# Claude Code — Worker Module Rules
+# Claude Code - Worker Module Rules
 
 > Global rules in root CLAUDE.md also apply.
 

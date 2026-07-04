@@ -5,20 +5,20 @@ import DashboardLayout from "@/shared/layouts/DashboardLayout";
 import AuthGuard from "@/shared/components/guards/AuthGuard";
 import GuestGuard from "@/shared/components/guards/GuestGuard";
 
-// Pages — Auth
+// Pages - Auth
 import LoginPage from "@/features/auth/pages/LoginPage";
 
-// Pages — Dashboard
+// Pages - Dashboard
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 
-// Pages — Penalties
+// Pages - Penalties
 import MyPenaltiesPage from "@/features/penalties/pages/MyPenaltiesPage";
 
-// Pages — Tasks
+// Pages - Tasks
 import MyTasksPage from "@/features/tasks/pages/MyTasksPage";
 import TaskDetailPage from "@/features/tasks/pages/TaskDetailPage";
 
-// Pages — Attendance
+// Pages - Attendance
 import AttendancePage from "@/features/attendance/pages/AttendancePage";
 import MyAttendancePage from "@/features/attendance/pages/MyAttendancePage";
 
