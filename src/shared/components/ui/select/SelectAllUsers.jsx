@@ -23,7 +23,7 @@ const SelectAllUsers = ({ value, onChange }) => {
       emptyText="Foydalanuvchi topilmadi"
       placeholder="Foydalanuvchini tanlang"
       options={users.map((user) => ({
-        value: user._id,
+        value: user.id,
         label: `${user.firstName} ${user.lastName || ""} (${user.role})`,
       }))}
     />
