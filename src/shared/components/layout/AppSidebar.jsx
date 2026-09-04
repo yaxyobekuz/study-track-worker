@@ -2,7 +2,9 @@
 import {
   Home,
   Clock,
+  Boxes,
   LogOut,
+  UserRound,
   AlertTriangle,
   TrendingUp,
   PanelLeft,
@@ -59,6 +61,10 @@ import { authAPI } from "@/features/auth/api/auth.api";
 
 // Hooks
 import { useIsMobile } from "@/shared/hooks/useMobile";
+import usePermissions from "@/shared/hooks/usePermissions";
+
+// Permissions
+import { permissionForPath } from "@/features/permissions/data/permissions.data";
 
 // Navigation items
 const navItems = [
@@ -102,6 +108,45 @@ const navItems = [
       {
         title: "Mening davomatim",
         url: "/attendance/my",
+      },
+    ],
+  },
+  {
+    // INVENTAR — faqat admin panel ruxsat bergan xodimga ko'rinadi. Har bir
+    // sahifa o'z ruxsatini talab qiladi (`permissionForPath`): jihoz
+    // sanaydigan xodimga "Qarzdorlar" chiqmaydi, hisobot yuboradigan xodimga
+    // "Katalog" chiqmaydi. Birorta sahifaga ruxsat bo'lmasa bo'lim yo'qoladi.
+    title: "Inventar",
+    icon: Boxes,
+    isActive: false,
+    items: [
+      {
+        title: "Umumiy",
+        url: "/inventory/overview",
+      },
+      {
+        title: "Kunlik hisobot",
+        url: "/inventory/checks",
+      },
+      {
+        title: "Zararlar",
+        url: "/inventory/damages",
+      },
+      {
+        title: "Qarzdorlar",
+        url: "/inventory/debtors",
+      },
+      {
+        title: "Xatlov",
+        url: "/inventory/stock",
+      },
+      {
+        title: "Katalog",
+        url: "/inventory/catalog",
+      },
+      {
+        title: "Sozlamalar",
+        url: "/inventory/settings",
       },
     ],
   },
@@ -167,12 +212,28 @@ const Header = () => {
 };
 
 const Main = () => {
+  const isMobile = useIsMobile();
+  const { toggleSidebar } = useSidebar();
+  const { can } = usePermissions();
+
+  // Ruxsat talab qiladigan sahifalarni yashiramiz; bo'lim bo'sh qolsa — butun
+  // bo'limni. Ruxsatsiz sahifalar (`permissionForPath` → null) avvalgidek
+  // hammaga ko'rinadi.
+  const visibleNavItems = navItems
+    .map((item) => ({
+      ...item,
+      items: (item.items || []).filter((sub) =>
+        can(permissionForPath(sub.url)),
+      ),
+    }))
+    .filter((item) => item.items.length > 0);
+
   return (
     <SidebarContent>
       <SidebarGroup>
         <SidebarGroupLabel>Platforma</SidebarGroupLabel>
         <SidebarMenu>
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Collapsible
               asChild
               key={item.title}
@@ -202,7 +263,12 @@ const Main = () => {
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton className="h-auto py-2" asChild>
-                          <Link to={subItem.url}>{subItem.title}</Link>
+                          <Link
+                            to={subItem.url}
+                            onClick={isMobile ? toggleSidebar : undefined}
+                          >
+                            {subItem.title}
+                          </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     ))}
@@ -226,6 +292,7 @@ const Footer = () => {
   });
 
   const isMobile = useIsMobile();
+  const { toggleSidebar } = useSidebar();
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -290,6 +357,14 @@ const Footer = () => {
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
+
+              {/* Profil — ism/parol va oyligim */}
+              <DropdownMenuItem asChild>
+                <Link to="/profile" onClick={isMobile ? toggleSidebar : undefined}>
+                  <UserRound strokeWidth={1.5} />
+                  Profil
+                </Link>
+              </DropdownMenuItem>
 
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut strokeWidth={1.5} />
