@@ -13,6 +13,7 @@ export const MODAL_NAMES = [
   // Inventar (moddiy-texnik baza) — admin panel bilan bir xil nomlar
   "inventoryCategory",
   "inventoryItem",
+  "inventoryDeleteItem",
   "inventoryLocation",
   "inventoryAddStock",
   "inventoryRepair",
