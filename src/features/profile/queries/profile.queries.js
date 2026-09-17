@@ -30,4 +30,11 @@ export const profileQueries = {
       queryKey: [...profileKeys.all, "payroll"],
       queryFn: () => profileAPI.getPayroll().then((r) => r.data.data),
     }),
+
+  /** To'xtatilgan oyligim → `{ items, month, monthLabel }`. */
+  suspensions: () =>
+    queryOptions({
+      queryKey: [...profileKeys.all, "suspensions"],
+      queryFn: () => profileAPI.getSuspensions().then((r) => r.data.data),
+    }),
 };
