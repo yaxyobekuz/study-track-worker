@@ -24,6 +24,8 @@ import MyAttendancePage from "@/features/attendance/pages/MyAttendancePage";
 
 // Pages - Profile
 import ProfilePage from "@/features/profile/pages/ProfilePage";
+import MyTutorGroupsPage from "@/features/tutorGroups/pages/MyTutorGroupsPage";
+import MyTutorGroupPage from "@/features/tutorGroups/pages/MyTutorGroupPage";
 
 // Pages - Inventar (moddiy-texnik baza) — ruxsat bilan ochiladi
 import InventoryLayout from "@/features/inventory/layouts/InventoryLayout";
@@ -64,6 +66,10 @@ const Routes = () => {
 
           {/* Profile — o'z ma'lumotlarim va oyligim */}
           <Route path="/profile" element={<ProfilePage />} />
+
+          {/* Tyutor guruhlari — server faqat o'z guruhini qaytaradi */}
+          <Route path="/tutor-groups" element={<MyTutorGroupsPage />} />
+          <Route path="/tutor-groups/:groupId" element={<MyTutorGroupPage />} />
 
           {/* INVENTAR — admin panel bergan ruxsat bilan ochiladi
               (`PermissionGuard` yo'lni, `Can` esa tugmalarni tekshiradi).
