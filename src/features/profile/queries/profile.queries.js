@@ -31,6 +31,13 @@ export const profileQueries = {
       queryFn: () => profileAPI.getPayroll().then((r) => r.data.data),
     }),
 
+  /** Joriy oy oyligim → `{ current, live, hours, totals, monthLabel }`. */
+  myStats: () =>
+    queryOptions({
+      queryKey: [...profileKeys.all, "my-stats"],
+      queryFn: () => profileAPI.getMyStats().then((r) => r.data.data),
+    }),
+
   /** To'xtatilgan oyligim → `{ items, month, monthLabel }`. */
   suspensions: () =>
     queryOptions({
