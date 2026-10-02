@@ -154,6 +154,15 @@ export const PAYROLL_ENTRY_COLUMNS = [
   "Holat",
 ];
 
+/**
+ * KELMAGAN KUNLAR — davomat holati belgisi (server `statusLabel` beradi,
+ * bu yerda faqat rang). Teacher panelidagi `salary.data.js` bilan AYNI.
+ */
+export const ABSENCE_STATUS_META = {
+  absent: "bg-red-100 text-red-700",
+  excused: "bg-amber-100 text-amber-700",
+};
+
 /** Majburiyat holati uchun badge (admin paneldagi bilan bir xil ranglar). */
 /**
  * Ustama qatori yorlig'i (`allowanceBreakdown` elementi). Tyutor guruhida
