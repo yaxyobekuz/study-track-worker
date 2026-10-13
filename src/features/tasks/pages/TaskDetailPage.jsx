@@ -17,22 +17,33 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { tasksAPI } from "@/features/tasks/api/tasks.api";
 
 // Data
-import { taskStatusLabels, taskStatusColors, SUBMITTABLE_STATUSES } from "../data/tasks.data";
+import {
+  taskStatusLabels,
+  taskStatusColors,
+  SUBMITTABLE_STATUSES,
+  kindMeta,
+  stateMeta,
+  resolveTimeState,
+} from "../data/tasks.data";
+
+// Hooks
+import useNow from "../hooks/useNow";
 
 // Utils
-import { formatDateUZ } from "@/shared/utils/date.utils";
+import { formatDateTimeUz } from "@/shared/utils/date.utils";
 
 // Components
 import Card from "@/shared/components/ui/Card";
-import Button from "@/shared/components/ui/button/Button";
+import TaskSubmitForm from "../components/TaskSubmitForm";
+import TaskWindowBar from "../components/TaskWindowBar";
+import TaskLinksList from "../components/TaskLinksList";
 
 const TaskDetailPage = () => {
+  const now = useNow();
   const { taskId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [note, setNote] = useState("");
-  const [files, setFiles] = useState(null);
   const [showSubmitForm, setShowSubmitForm] = useState(false);
 
   const { data: task, isLoading } = useQuery({
@@ -45,23 +56,19 @@ const TaskDetailPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks", "detail", taskId] });
       queryClient.invalidateQueries({ queryKey: ["tasks", "my"] });
-      setShowSubmitForm(false);
-      setNote("");
-      setFiles(null);
-      toast.success("Topshiriq ko'rib chiqishga yuborildi");
     },
-    onError: (err) =>
-      toast.error(err.response?.data?.message || "Xatolik yuz berdi"),
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    if (note) formData.append("note", note);
-    if (files) {
-      for (const file of files) formData.append("files", file);
-    }
-    submitMutation.mutate(formData);
+  const handleSubmit = (formData, reset) => {
+    submitMutation.mutate(formData, {
+      onSuccess: () => {
+        setShowSubmitForm(false);
+        reset();
+        toast.success("Topshiriq ko'rib chiqishga yuborildi");
+      },
+      onError: (err) =>
+        toast.error(err.response?.data?.message || "Xatolik yuz berdi"),
+    });
   };
 
   if (isLoading) {
@@ -74,9 +81,12 @@ const TaskDetailPage = () => {
 
   if (!task) return null;
 
-  const isOverdue =
-    new Date(task.dueDate) < new Date() &&
-    !["completed", "stopped"].includes(task.status);
+  // Vaqt holati JONLI hisoblanadi (`taskWindow.helpers.js` bilan AYNI
+  // qoida): "hozir bajarilish vaqti" oraliq boshlanganda yonadi
+  const state = resolveTimeState(task, now);
+  const meta = stateMeta(state);
+  const kind = kindMeta(task.kind);
+  const isOverdue = state === "missed";
 
   const canSubmit = SUBMITTABLE_STATUSES.includes(task.status);
 
@@ -91,30 +101,63 @@ const TaskDetailPage = () => {
           <ArrowLeft className="size-4" />
         </button>
         <h1 className="text-xl font-bold text-gray-800">Topshiriq tafsilotlari</h1>
-        <span className={`ml-auto inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${taskStatusColors[task.status]}`}>
-          {taskStatusLabels[task.status]}
+        <span
+          className={`ml-auto inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${meta.chip}`}
+        >
+          {meta.label}
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Main */}
         <div className="lg:col-span-2 space-y-4">
+          {/* Info */}
           <Card>
             <h3 className="text-sm font-semibold text-gray-700 mb-3">Asosiy ma'lumotlar</h3>
             <div className="space-y-2.5 text-sm">
               <InfoRow label="Sarlavha">
                 <span className="font-medium">{task.title}</span>
               </InfoRow>
-              <InfoRow label="Ijro muddati">
-                <span className={isOverdue ? "text-red-600 font-semibold" : ""}>
-                  {formatDateUZ(task.dueDate)}
-                  {isOverdue && <span className="ml-1 text-xs">(muddati o'tgan)</span>}
+              <InfoRow label="Turi">
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${kind.chip}`}
+                >
+                  {kind.label}
+                </span>
+              </InfoRow>
+              <InfoRow label="Holati">
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${taskStatusColors[task.status]}`}
+                >
+                  {taskStatusLabels[task.status]}
                 </span>
               </InfoRow>
               <InfoRow label="Jarima bali">
                 <span className="font-semibold text-red-600">{task.penaltyPoints} ball</span>
               </InfoRow>
-              <InfoRow label="Yaratilgan">{formatDateUZ(task.createdAt)}</InfoRow>
+              <InfoRow label="Yaratilgan">{formatDateTimeUz(task.createdAt)}</InfoRow>
+            </div>
+
+            {/* Bajarish vaqti — oraliq bo'lsa ikkala vaqt va jonli hisob */}
+            <div
+              className={`mt-3 rounded-xl p-3 ${
+                state === "active" ? "bg-red-50" : isOverdue ? "bg-red-50" : "bg-gray-50"
+              }`}
+            >
+              <p className="mb-1.5 text-xs font-medium text-gray-600">
+                {task.startDate ? "Bajarish vaqti" : "Ijro muddati"}
+              </p>
+              <TaskWindowBar task={task} now={now} state={state} />
+              {state === "active" && (
+                <p className="mt-2 text-xs font-medium text-red-700">
+                  Hozir shu topshiriqni bajarish vaqti
+                </p>
+              )}
+              {isOverdue && (
+                <p className="mt-2 text-xs font-medium text-red-700">
+                  Muddat o'tdi — ish topshirilmagan
+                </p>
+              )}
             </div>
             {task.description && (
               <div className="mt-3 pt-3 border-t border-gray-100">
@@ -124,6 +167,14 @@ const TaskDetailPage = () => {
             )}
           </Card>
 
+          {/* Havolalar */}
+          {task.links?.length > 0 && (
+            <Card>
+              <TaskLinksList links={task.links} />
+            </Card>
+          )}
+
+          {/* Owner attachments */}
           {task.attachments?.length > 0 && (
             <Card>
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Topshiriq fayllari</h3>
@@ -135,6 +186,7 @@ const TaskDetailPage = () => {
             </Card>
           )}
 
+          {/* Completion info */}
           {(task.completionNote || task.completionAttachments?.length > 0) && (
             <Card>
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Mening yuborganlarim</h3>
@@ -151,6 +203,7 @@ const TaskDetailPage = () => {
             </Card>
           )}
 
+          {/* Status history */}
           {task.statusHistory?.length > 0 && (
             <Card>
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Status tarixi</h3>
@@ -174,7 +227,7 @@ const TaskDetailPage = () => {
                           <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${taskStatusColors[entry.status]}`}>
                             {taskStatusLabels[entry.status]}
                           </span>
-                          <span className="text-[11px] text-gray-400">{formatDateUZ(entry.changedAt)}</span>
+                          <span className="text-[11px] text-gray-400">{formatDateTimeUz(entry.changedAt)}</span>
                         </div>
                         <p className="text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
                           {entry.reason}
@@ -190,6 +243,7 @@ const TaskDetailPage = () => {
 
         {/* Sidebar */}
         <div className="space-y-4">
+          {/* Deadline history */}
           {task.deadlineHistory?.length > 0 && (
             <Card>
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Muddat tarixi</h3>
@@ -197,9 +251,9 @@ const TaskDetailPage = () => {
                 {task.deadlineHistory.map((entry, idx) => (
                   <div key={idx} className="text-xs border-b border-gray-50 pb-2 last:border-0">
                     <div className="flex items-center gap-1 mb-1">
-                      <span className="text-gray-400 line-through">{formatDateUZ(entry.oldDueDate)}</span>
+                      <span className="text-gray-400 line-through">{formatDateTimeUz(entry.oldDueDate)}</span>
                       <span className="text-gray-400">→</span>
-                      <span className="font-medium">{formatDateUZ(entry.newDueDate)}</span>
+                      <span className="font-medium">{formatDateTimeUz(entry.newDueDate)}</span>
                     </div>
                     <p className="text-gray-500">{entry.reason}</p>
                     {entry.withPenalty && (
@@ -211,57 +265,24 @@ const TaskDetailPage = () => {
             </Card>
           )}
 
+          {/* Submit action */}
           {canSubmit && (
             <Card>
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Amal</h3>
               {!showSubmitForm ? (
-                <Button
-                  variant="default"
-                  className="w-full text-sm"
+                <button
                   onClick={() => setShowSubmitForm(true)}
+                  className="w-full py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium"
                 >
                   Bajarildi deb belgilash
-                </Button>
+                </button>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Izoh (ixtiyoriy)</label>
-                    <textarea
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      rows={3}
-                      placeholder="Bajarilgan ish haqida..."
-                      className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Fayllar (ixtiyoriy)</label>
-                    <input
-                      multiple
-                      type="file"
-                      accept="image/*,video/mp4,video/webm,application/pdf"
-                      onChange={(e) => setFiles(e.target.files)}
-                      className="w-full text-sm"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowSubmitForm(false)}
-                      className="flex-1 py-2 rounded-lg border border-gray-300 text-sm text-gray-600"
-                    >
-                      Bekor
-                    </button>
-                    <Button
-                      type="submit"
-                      variant="default"
-                      disabled={submitMutation.isPending}
-                      className="flex-1 text-sm"
-                    >
-                      {submitMutation.isPending ? "Yuborilmoqda..." : "Yuborish"}
-                    </Button>
-                  </div>
-                </form>
+                <TaskSubmitForm
+                  rules={task.submissionRules}
+                  isPending={submitMutation.isPending}
+                  onSubmit={handleSubmit}
+                  onCancel={() => setShowSubmitForm(false)}
+                />
               )}
             </Card>
           )}
