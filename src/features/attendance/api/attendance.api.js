@@ -3,6 +3,9 @@ import http from "@/shared/api/http";
 export const attendanceAPI = {
   checkIn: (data) => http.post("/attendance/check-in", data),
   checkOut: (data) => http.post("/attendance/check-out", data),
+
+  // Ketishdan OLDIN: bugungi tugamagan ishlar ro'yxati (ogohlantirish uchun)
+  getCheckoutReadiness: () => http.get("/attendance/checkout-readiness"),
   getToday: () => http.get("/attendance/today"),
   getMySchedule: () => http.get("/attendance/my-schedule"),
   getMyHistory: (month, year) =>

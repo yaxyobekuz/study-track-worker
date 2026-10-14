@@ -13,6 +13,9 @@ import { attendanceAPI } from "../api/attendance.api";
 // Tanstack Query
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+// Router
+import { Link } from "react-router-dom";
+
 // Components
 import Card from "@/shared/components/ui/Card";
 import GeolocationStatus from "./GeolocationStatus";
@@ -65,6 +68,15 @@ const CheckInOutCard = ({ todayRecord }) => {
   const submitting = useRef(false);
 
   const [showConfirm, setShowConfirm] = useState(false);
+
+  // Tugamagan topshiriqlar — tasdiq oynasi ochilganda so'raladi
+  const { data: readiness } = useQuery({
+    queryKey: ["attendance", "checkout-readiness"],
+    queryFn: () => attendanceAPI.getCheckoutReadiness().then((res) => res.data.data),
+    enabled: showConfirm,
+    staleTime: 30 * 1000,
+  });
+  const pendingTasks = readiness?.tasks?.items ?? [];
   // Lazy initializer — komponent har qayta render bo'lganda Date.now()
   // qayta chaqirilmasligi uchun (react-hooks/purity).
   const [now, setNow] = useState(() => Date.now());
@@ -254,6 +266,38 @@ const CheckInOutCard = ({ todayRecord }) => {
       {/* Checkout Confirmation */}
       {showConfirm && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 space-y-3">
+          {/* ⚠️ BAJARILMAGAN TOPSHIRIQLAR — ketishdan OLDIN aytiladi.
+              Qat'iy to'siq emas (u faqat o'qituvchida): xodim ko'rib,
+              o'zi qaror qiladi. Qator bosilsa o'sha topshiriq ochiladi. */}
+          {pendingTasks.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-red-800">
+                Sizda {pendingTasks.filter((t) => !t.locked).length} ta bajarilmagan
+                topshiriq bor
+              </p>
+              <ul className="space-y-1.5">
+                {pendingTasks.map((task) => (
+                  <li key={task.id}>
+                    <Link
+                      to={`/tasks/${task.id}`}
+                      className="block rounded-lg bg-white px-3 py-2 active:bg-gray-50"
+                    >
+                      <span className="block text-sm font-medium text-gray-900">
+                        {task.title}
+                      </span>
+                      <span className="block text-xs text-red-600">
+                        {task.startLabel
+                          ? `${task.startLabel} — ${task.dueLabel}`
+                          : `Muddat: ${task.dueLabel}`}
+                        {task.overdue && " · muddati o'tgan"}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <p className="text-sm font-medium text-red-800">
             Haqiqatan ham ketmoqchimisiz?
           </p>
