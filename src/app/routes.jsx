@@ -24,6 +24,7 @@ import MyAttendancePage from "@/features/attendance/pages/MyAttendancePage";
 
 // YOTOQXONA DAVOMATI — tarbiyachi uchun (ruxsat bilan ochiladi)
 import DormAttendancePage from "@/features/dormAttendance/pages/DormAttendancePage";
+import DormClassPage from "@/features/dormAttendance/pages/DormClassPage";
 
 // Pages - Profile
 import ProfilePage from "@/features/profile/pages/ProfilePage";
@@ -70,6 +71,9 @@ const Routes = () => {
           {/* YOTOQXONA DAVOMATI — admin panel bergan ruxsat bilan
               (`dormAttendance.view`, `permissionForPath`) */}
           <Route path="/dorm-attendance" element={<DormAttendancePage />} />
+          {/* Sinf sahifasi — guruh ichiga kirish: belgilash + o'quvchining
+              oxirgi kunlari + sinfning kunlar kesimi */}
+          <Route path="/dorm-attendance/:classId" element={<DormClassPage />} />
 
           {/* Profile — o'z ma'lumotlarim va oyligim */}
           <Route path="/profile" element={<ProfilePage />} />

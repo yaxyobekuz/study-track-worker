@@ -6,6 +6,9 @@
  * opening an unregistered name logs a warning so typos surface immediately.
  */
 export const MODAL_NAMES = [
+  // Yotoqxona davomati → o'quvchining kun-ba-kun tarixi
+  "dormStudentHistory",
+
   // Guruhlarim → sertifikat rejasi: muddat va yo'nalishni to'g'rilash
   "editGroupCertificate",
 
