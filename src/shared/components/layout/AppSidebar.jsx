@@ -125,6 +125,12 @@ const navItems = [
         title: "Mening davomatim",
         url: "/attendance/my",
       },
+      {
+        // YOTOQXONA — faqat admin panel ruxsat bergan xodimga (tarbiyachi).
+        // Ruxsati bo'lmasa qator yo'qoladi (`permissionForPath`).
+        title: "Yotoqxona davomati",
+        url: "/dorm-attendance",
+      },
     ],
   },
   {

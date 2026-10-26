@@ -254,6 +254,22 @@ export const formatHolidayDate = (holiday) => {
 };
 
 /**
+ * Bugungi kun `<input type="date">` QIYMATI sifatida: "2026-09-08".
+ *
+ * ⚠️ Bu FORMAT emas, ISO qiymat — ekranga chiqmaydi (`dates.md` §3
+ * istisnosi). Ko'rsatish uchun `formatDateUz` ishlatiladi.
+ *
+ * ⚠️ `toISOString()` UTC beradi, shuning uchun avval mahalliy ofset
+ * ayiriladi: aks holda Toshkentda ertalab soat 04:00 gacha input
+ * KECHAGI kunni ko'rsatib turardi.
+ */
+export const todayInputValue = () => {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+};
+
+/**
  * Istalgan instant `<input type="datetime-local">` QIYMATI sifatida:
  * "2026-09-08T14:30".
  *

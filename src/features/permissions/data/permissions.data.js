@@ -48,6 +48,8 @@ export const hasSection = (permissions = [], section) => {
 // yutadi: `/inventory/checks` uchun `monitoring.view`, qolgan `/inventory/*`
 // uchun `inventory.view`. Sozlamalar sahifasi alohida kalit bilan.
 const ROUTE_PERMISSIONS = [
+  // Yotoqxona davomati — tarbiyachiga admin paneldan beriladi
+  { prefix: "/dorm-attendance", key: "dormAttendance.view" },
   { prefix: "/inventory", key: "inventory.view" },
   { prefix: "/inventory/checks", key: "monitoring.view" },
   { prefix: "/inventory/damages", key: "damages.view" },

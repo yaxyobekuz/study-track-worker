@@ -22,6 +22,9 @@ import TaskDetailPage from "@/features/tasks/pages/TaskDetailPage";
 import AttendancePage from "@/features/attendance/pages/AttendancePage";
 import MyAttendancePage from "@/features/attendance/pages/MyAttendancePage";
 
+// YOTOQXONA DAVOMATI — tarbiyachi uchun (ruxsat bilan ochiladi)
+import DormAttendancePage from "@/features/dormAttendance/pages/DormAttendancePage";
+
 // Pages - Profile
 import ProfilePage from "@/features/profile/pages/ProfilePage";
 import MyTutorGroupsPage from "@/features/tutorGroups/pages/MyTutorGroupsPage";
@@ -63,6 +66,10 @@ const Routes = () => {
           {/* Attendance */}
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/attendance/my" element={<MyAttendancePage />} />
+
+          {/* YOTOQXONA DAVOMATI — admin panel bergan ruxsat bilan
+              (`dormAttendance.view`, `permissionForPath`) */}
+          <Route path="/dorm-attendance" element={<DormAttendancePage />} />
 
           {/* Profile — o'z ma'lumotlarim va oyligim */}
           <Route path="/profile" element={<ProfilePage />} />

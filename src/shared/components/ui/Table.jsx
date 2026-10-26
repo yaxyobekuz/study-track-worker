@@ -12,7 +12,7 @@ import { cn } from "@/shared/utils/cn";
  * `thead` — `bg-primary`), shuning uchun bu yerda faqat joylashuv.
  *
  * @param {object} props
- * @param {Array<string|{label: string, align?: "left"|"right"|"center", className?: string}>} props.columns
+ * @param {Array<string|{label: React.ReactNode, key?: string, align?: "left"|"right"|"center", className?: string}>} props.columns
  * @param {React.ReactNode} props.children - `<tr>` qatorlari
  * @param {string} [props.className]
  */
@@ -25,8 +25,18 @@ const Table = ({ columns = [], children, className = "" }) => (
             const config = typeof column === "string" ? { label: column } : column;
 
             return (
+              /**
+               * ⚠️ KALIT `label` DAN OLINMAYDI, agar u MATN bo'lmasa.
+               * Sarlavhada tugma yoki katakcha (JSX) bo'lgan ustunlar
+               * `key={config.label}` bilan hammasi "[object Object]" ga
+               * aylanib, React'da takroriy kalit ogohlantirishini
+               * chiqarardi (admin panelidagi `Table` bilan AYNI tuzatish).
+               */
               <th
-                key={config.label || index}
+                key={
+                  config.key ??
+                  (typeof config.label === "string" ? config.label : index)
+                }
                 className={cn(
                   "whitespace-nowrap px-4 py-3 font-medium text-white",
                   config.align === "right" && "text-right",
