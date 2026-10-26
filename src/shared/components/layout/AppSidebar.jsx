@@ -126,6 +126,15 @@ const navItems = [
         url: "/attendance/my",
       },
       {
+        // O'QUVCHILAR DAVOMATI — faqat sinf rahbari roli bor xodimga
+        // (`/auth/me` → `isClassLeader`, "Guruhlarim" bilan AYNI naqsh).
+        // Ruxsat kaliti YO'Q: huquq rol belgisi va biriktirishdan keladi,
+        // server esa faqat o'ziga tegishli sinflarni qaytaradi.
+        title: "O'quvchilar davomati",
+        url: "/attendance/students",
+        classLeaderOnly: true,
+      },
+      {
         // YOTOQXONA — faqat admin panel ruxsat bergan xodimga (tarbiyachi).
         // Ruxsati bo'lmasa qator yo'qoladi (`permissionForPath`).
         title: "Yotoqxona davomati",
@@ -241,13 +250,18 @@ const Main = () => {
 
   // Ruxsat talab qiladigan sahifalarni yashiramiz; bo'lim bo'sh qolsa — butun
   // bo'limni. Ruxsatsiz sahifalar (`permissionForPath` → null) avvalgidek
-  // hammaga ko'rinadi. Tyutor bo'limi — faqat tyutor roli borlarga.
+  // hammaga ko'rinadi. Tyutor bo'limi — faqat tyutor roli borlarga, sinf
+  // rahbari qatori esa faqat sinf rahbari roli borlarga (`classLeaderOnly`):
+  // ikkalasi ham RUXSAT KALITI emas, ROL BELGISI bo'yicha.
   const visibleNavItems = navItems
     .filter((item) => !item.tutorOnly || user?.isTutor)
     .map((item) => ({
       ...item,
-      items: (item.items || []).filter((sub) =>
-        can(permissionForPath(sub.url)),
+      items: (item.items || []).filter(
+        (sub) =>
+          // Sinf rahbari qatori — rol belgisi bo'yicha (ruxsat kaliti yo'q)
+          (!sub.classLeaderOnly || user?.isClassLeader) &&
+          can(permissionForPath(sub.url)),
       ),
     }))
     .filter((item) => item.items.length > 0);

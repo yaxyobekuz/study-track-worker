@@ -21,6 +21,8 @@ import TaskDetailPage from "@/features/tasks/pages/TaskDetailPage";
 // Pages - Attendance
 import AttendancePage from "@/features/attendance/pages/AttendancePage";
 import MyAttendancePage from "@/features/attendance/pages/MyAttendancePage";
+// Pages - O'quvchilar davomati (sinf rahbarligidagi sinflar)
+import StudentAttendancePage from "@/features/studentAttendance/pages/StudentAttendancePage";
 
 // YOTOQXONA DAVOMATI — tarbiyachi uchun (ruxsat bilan ochiladi)
 import DormAttendancePage from "@/features/dormAttendance/pages/DormAttendancePage";
@@ -67,6 +69,13 @@ const Routes = () => {
           {/* Attendance */}
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/attendance/my" element={<MyAttendancePage />} />
+
+          {/* O'quvchilar davomati — server sinf rahbarligidagi sinflarni
+              (va darsi bor sinflarni) beradi; ruxsat kaliti yo'q */}
+          <Route
+            path="/attendance/students"
+            element={<StudentAttendancePage />}
+          />
 
           {/* YOTOQXONA DAVOMATI — admin panel bergan ruxsat bilan
               (`dormAttendance.view`, `permissionForPath`) */}
